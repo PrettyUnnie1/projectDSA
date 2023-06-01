@@ -10,11 +10,17 @@ WIDTH, HEIGHT = 400,500
 
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Minesweeper")
+# Difficulty levels
+difficulty_levels = {
+    "easy": {"rows": 8, "cols": 8, "mines": 10},
+    "medium": {"rows": 8, "cols": 16, "mines": 16},
+    "hard": {"rows": 16, "cols": 16, "mines": 50}
+}
 
 # Khai bao bien
 COLOR = "white"
-rows, cols = 16 , 16
-mines = 50
+rows, cols = 8 , 8
+mines = 10
 num_font = pygame.font.SysFont('comicsans', 20)
 lost_font = pygame.font.SysFont('comicsans', 100)
 time_font = pygame.font.SysFont('comicsans', 50)
@@ -25,6 +31,34 @@ clicked_rect_color = (140, 140, 140)
 flag_rect_color = "green"
 mine_color = "red"
 size = WIDTH / rows
+#Function choose level
+def choose_difficulty():
+    text = num_font.render("Choose difficulty:", 1, "black")
+    win.blit(text, ((WIDTH - text.get_width()) // 2, (HEIGHT - text.get_height()) // 2 - 50))
+
+    options = ["easy", "medium", "hard"]
+    option_texts = [num_font.render(option, 1, "black") for option in options]
+    option_rects = [option_text.get_rect(center=((WIDTH // 2), (HEIGHT // 2) + 50 * (i + 1)))]
+    for i, option_text in enumerate(option_texts):
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                for i, rect in enumerate(option_rects):
+                    if rect.collidepoint(mouse_pos):
+                        return options[i]
+
+        win.fill(COLOR)
+        win.blit(text, ((WIDTH - text.get_width()) // 2, (HEIGHT - text.get_height()) // 2 - 50))
+        for option_text, option_rect in zip(option_texts, option_rects):
+            win.blit(option_text, option_rect)
+        pygame.display.update()
+
 
 # Function do bom xung quanh
 def get_neighbors(row, col, rows, cols):
@@ -163,6 +197,9 @@ def draw_lost(win,text):
 # mainFunction
 def main():
     run = True
+    current_difficulty = choose_difficulty()
+    difficulty = difficulty_levels[current_difficulty]
+    rows, cols, mines = difficulty["rows"], difficulty["cols"], difficulty["mines"]
     board = create_mine_field(rows, cols, mines)
     cover_field = [[0 for _ in range(cols)] for _ in range(rows)]
     flag_positions = set()
