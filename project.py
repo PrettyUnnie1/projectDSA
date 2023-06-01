@@ -1,21 +1,23 @@
 import pygame
 import random
 import pprint
+import time
 from queue import Queue
 
 pygame.init()
 
-WIDTH, HEIGHT = 700, 800
+WIDTH, HEIGHT = 400,500
 
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Minesweeper")
 
 # Khai bao bien
 COLOR = "white"
-rows, cols = 10,10
-mines = 30
+rows, cols = 16 , 16
+mines = 50
 num_font = pygame.font.SysFont('comicsans', 20)
 lost_font = pygame.font.SysFont('comicsans', 100)
+time_font = pygame.font.SysFont('comicsans', 50)
 num_color = {1: "black", 2: "green", 3: "red", 4: "orange",
              5: "yellow", 6: "purple", 7: "blue", 8: "pink"}
 rect_color = (200, 200, 200)
@@ -77,8 +79,11 @@ def create_mine_field(rows, cols, mines):
 
 
 # Function to draw the game board
-def draw(board, win, cover_field, rows, cols):
+def draw(board, win, cover_field, rows, cols,current_time):
     win.fill(COLOR)
+    
+    time_text = time_font.render(f"Time elapsed:{round(current_time)}",1,"black")
+    win.blit(time_text,(10,HEIGHT - time_text.get_height()))
 
     for i, row in enumerate(board):
         y = size * i
@@ -165,8 +170,14 @@ def main():
     clicks= 0
     lost = False
     pprint.pprint(board)
+    
+    start_time = 0
 
     while run:
+        if start_time >0 :
+            current_time = time.time() - start_time
+        else:
+            current_time = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -185,7 +196,8 @@ def main():
                         lost = True
                     if clicks == 0 or board[row][col] == 0 or board[row][col] == -1:
                         uncover_from_pos(row, col, cover_field, board)
-
+                    if clicks == 0 :
+                        start_time = time.time()
                     clicks +=1
                 elif mouse_pressed[2]:
                     if cover_field[row][col] == -2:
@@ -196,7 +208,7 @@ def main():
                         cover_field[row][col] = -2   
                 # Rest of the code
         if lost:
-            draw(board,win,cover_field, rows,cols)
+            draw(board,win,cover_field, rows,cols,current_time)
             draw_lost(win,"BẠN ĐÃ THUA")
             pygame.time.delay(1000)
                         
@@ -205,7 +217,7 @@ def main():
             flag = mines
             clicks= 0
             lost = False
-        draw(board, win, cover_field, rows, cols)
+        draw(board, win, cover_field, rows, cols,current_time)
 
     pygame.quit()
 
