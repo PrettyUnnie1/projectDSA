@@ -10,17 +10,30 @@ WIDTH, HEIGHT = 400,500
 
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Minesweeper")
-# Difficulty levels
+# Define difficulty levels
 difficulty_levels = {
-    "easy": {"rows": 8, "cols": 8, "mines": 10},
-    "medium": {"rows": 8, "cols": 16, "mines": 16},
-    "hard": {"rows": 16, "cols": 16, "mines": 50}
+    "easy": {
+        "rows": 8,
+        "cols": 8,
+        "mines": 10
+    },
+    "medium": {
+        "rows": 8,
+        "cols": 16,
+        "mines": 16
+    },
+    "hard": {
+        "rows": 16,
+        "cols": 16,
+        "mines": 50
+    }
 }
+
+# Default difficulty level
+current_difficulty = "easy"
 
 # Khai bao bien
 COLOR = "white"
-rows, cols = 8 , 8
-mines = 10
 num_font = pygame.font.SysFont('comicsans', 20)
 lost_font = pygame.font.SysFont('comicsans', 100)
 time_font = pygame.font.SysFont('comicsans', 50)
@@ -30,36 +43,9 @@ rect_color = (200, 200, 200)
 clicked_rect_color = (140, 140, 140)
 flag_rect_color = "green"
 mine_color = "red"
+# Define game variables
+rows, cols, mines = difficulty_levels[current_difficulty].values()
 size = WIDTH / rows
-#Function choose level
-def choose_difficulty():
-    text = num_font.render("Choose difficulty:", 1, "black")
-    win.blit(text, ((WIDTH - text.get_width()) // 2, (HEIGHT - text.get_height()) // 2 - 50))
-
-    options = ["easy", "medium", "hard"]
-    option_texts = [num_font.render(option, 1, "black") for option in options]
-    option_rects = [option_text.get_rect(center=((WIDTH // 2), (HEIGHT // 2) + 50 * (i + 1)))]
-    for i, option_text in enumerate(option_texts):
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = pygame.mouse.get_pos()
-                for i, rect in enumerate(option_rects):
-                    if rect.collidepoint(mouse_pos):
-                        return options[i]
-
-        win.fill(COLOR)
-        win.blit(text, ((WIDTH - text.get_width()) // 2, (HEIGHT - text.get_height()) // 2 - 50))
-        for option_text, option_rect in zip(option_texts, option_rects):
-            win.blit(option_text, option_rect)
-        pygame.display.update()
-
-
 # Function do bom xung quanh
 def get_neighbors(row, col, rows, cols):
     neighbors = []
@@ -193,6 +179,34 @@ def draw_lost(win,text):
     text = lost_font.render(text,1,"black")
     win.blit(text, ((WIDTH - text.get_width()) // 2, (HEIGHT - text.get_height()) // 2))
     pygame.display.update()
+# Function to handle difficulty level selection
+def choose_difficulty():
+    text = num_font.render("Choose difficulty:", 1, "black")
+    win.blit(text, ((WIDTH - text.get_width()) // 2, (HEIGHT - text.get_height()) // 2 - 50))
+
+    options = list(difficulty_levels.keys())
+    option_texts = [num_font.render(option, 1, "black") for option in options]
+    option_rects = [
+        option_text.get_rect(center=((WIDTH // 2), (HEIGHT // 2) + i * 30))
+        for i, option_text in enumerate(option_texts)
+    ]
+
+    for option_text, option_rect in zip(option_texts, option_rects):
+        win.blit(option_text, option_rect)
+
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                for option, option_rect in zip(options, option_rects):
+                    if option_rect.collidepoint(mx, my):
+                        return option
       
 # mainFunction
 def main():
