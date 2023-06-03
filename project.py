@@ -13,7 +13,7 @@ pygame.display.set_caption("Minesweeper")
 # Khai bao bien
 COLOR = "white"
 num_font = pygame.font.SysFont('comicsans', 20)
-lost_font = pygame.font.SysFont('comicsans', 100)
+lost_font = pygame.font.SysFont('comicsans', 50)
 time_font = pygame.font.SysFont('comicsans', 50)
 num_color = {1: "black", 2: "green", 3: "red", 4: "orange",
              5: "yellow", 6: "purple", 7: "blue", 8: "pink"}
@@ -26,7 +26,7 @@ size = WIDTH / rows
 # Function do bom xung quanh
 def get_neighbors(row, col, rows, cols):
     neighbors = []
-
+    
     if row > 0:  # UP
         neighbors.append((row - 1, col))
     if row < rows - 1:  # DOWN
